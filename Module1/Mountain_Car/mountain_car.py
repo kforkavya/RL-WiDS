@@ -67,6 +67,15 @@ class QAgent:
         
         Return a tuple containing the indices along each dimension
         '''
+        T = []
+        low = self.observation_space_low
+        high = self.observation_space_high
+        for i in range(len(state)):
+            r = self.discrete_sizes[i]
+            r = float(high[i] - low[i])/r
+            s = state[i]
+            T.append(int((s - low[i])/r))
+        return tuple(T)
         pass
 
     def update(self, state, action, reward, next_state, is_terminal):
