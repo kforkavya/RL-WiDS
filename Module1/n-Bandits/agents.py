@@ -130,16 +130,25 @@ class GradientBanditAgent(Agent):
             self.H_values[action] = action_pref - self.alpha * error * action_prob
 
 class ThompsonSamplerAgent(Agent):
-    def __init__(self, bandits: Bandit) -> None:
+    def __init__(self, bandits: Bandit, alpha: float = 1, beta: float = 1) -> None:
         super().__init__(bandits)
         # add any member variables you may require
+        self.alpha = alpha
+        self.beta = beta
+        self.successes = np.zeros(self.banditN)
+        self.failures = np.zeros(self.banditN)
 
     # implement
     def action(self) -> int:
-        pass
+        sampled_values = np.random.beta(self.alpha + self.successes, self.beta + self.failures)
+        return np.argmax(sampled_values)
 
     # implement
     def update(self, choice: int, reward: int) -> None:
+        if reward == 1:
+            self.successes[choice] += 1
+        else:
+            self.failures[choice] += 1
         pass
 
 # Implement other subclasses if you want to try other strategies
