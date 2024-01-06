@@ -103,7 +103,7 @@ class GradientBanditAgent(Agent):
     # implement
     def action(self) -> int:
         self.action_probs = list(map(self.softmax, self.H_values))
-        action = np.random.choices(list(range(self.banditN)), self.action_probs, k=1)[0]
+        action = np.random.choice(np.arange(self.banditN), p=self.action_probs)
         return action
 
     def softmax(self, H):
