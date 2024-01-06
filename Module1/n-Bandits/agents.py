@@ -1,5 +1,6 @@
 from bandits import Bandit
 # Import libraries if you need them
+import numpy as np
 
 class Agent:
     def __init__(self, bandit: Bandit) -> None:
@@ -33,13 +34,17 @@ class GreedyAgent(Agent):
     def __init__(self, bandits: Bandit, initialQ : float) -> None:
         super().__init__(bandits)
         # add any member variables you may require
+        self.Q = np.full(self.banditN, initialQ)
+        self.N = np.zeros(self.banditN)
         
     # implement
     def action(self) -> int:
-        pass
+        return np.argmax(self.Q)
 
     # implement
     def update(self, choice: int, reward: int) -> None:
+        self.N[choice]+=1
+        self.Q[choice] = self.Q[choice] + (reward - self.Q[choice])/self.N[choice]
         pass
 
 class epsGreedyAgent(Agent):
@@ -47,13 +52,20 @@ class epsGreedyAgent(Agent):
         super().__init__(bandits)
         self.epsilon = epsilon
         # add any member variables you may require
+        self.Q = np.zeros(self.banditN)
+        self.N = np.zeros(self.banditN)
     
     # implement
     def action(self) -> int:
-        pass
+        action = np.random.randint(self.banditN)
+        if np.random.random() > self.epsilon:
+            action = np.argmax(self.Q)
+        return action
 
     # implement
     def update(self, choice: int, reward: int) -> None:
+        self.N[choice]+=1
+        self.Q[choice] = self.Q[choice] + (reward - self.Q[choice])/self.N[choice]
         pass
 
 class UCBAAgent(Agent):
