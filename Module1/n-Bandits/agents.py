@@ -73,13 +73,23 @@ class UCBAAgent(Agent):
         super().__init__(bandits)
         self.c = c
         # add any member variables you may require
+        self.e = 0
+        self.Q = np.zeros(self.banditN)
+        self.N = np.zeros(self.banditN)
 
     # implement
     def action(self) -> int:
-        pass
+        action = self.e
+        if self.e >= self.banditN:
+            U = np.sqrt(self.c*np.log(self.e)/self.N)
+            action = np.argmax(self.Q + U)
+        return action
 
     # implement
     def update(self, choice: int, reward: int) -> None:
+        self.N[choice]+=1
+        self.Q[choice] = self.Q[choice] + (reward - self.Q[choice])/self.N[choice]
+        self.e+=1
         pass
 
 class GradientBanditAgent(Agent):
@@ -87,14 +97,37 @@ class GradientBanditAgent(Agent):
         super().__init__(bandits)
         self.alpha = alpha
         # add any member variables you may require
+        self.H_values = np.zeros(self.banditN)
+        self.Q = np.zeros(self.banditN)
 
     # implement
     def action(self) -> int:
-        pass
+        self.action_probs = list(map(self.softmax, self.H_values))
+        action = np.random.choices(list(range(self.banditN)), self.action_probs, k=1)[0]
+        return action
+
+    def softmax(self, H):
+        return np.exp(H) / np.sum(np.exp(self.H_values))
 
     # implement
     def update(self, choice: int, reward: int) -> None:
+        self.Q[choice] = self.Q[choice] + (reward - self.Q[choice])*self.alpha
+        r_mean = self.Q[choice]
+        error = reward - r_mean
+        for a in range(self.banditN):
+            if a != choice:
+                self._updateActionPreference(a, error)
+            else:
+                self._updateActionPreference(a, error, is_curr_action=True)
         pass
+
+    def _updateActionPreference(self, action, error, is_curr_action=False):
+        action_pref = self.H_values[action]
+        action_prob = self.action_probs[action]
+        if is_curr_action:
+            self.H_values[action] = action_pref + self.alpha * error * (1 - action_prob) 
+        else:
+            self.H_values[action] = action_pref - self.alpha * error * action_prob
 
 class ThompsonSamplerAgent(Agent):
     def __init__(self, bandits: Bandit) -> None:
