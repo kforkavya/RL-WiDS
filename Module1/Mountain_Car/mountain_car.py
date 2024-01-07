@@ -79,8 +79,8 @@ class QAgent:
     def train(self, eval_intervals):
         for episode in range(1, self.num_train_episodes + 1):
             done = False
-            # if episode % 100 == 0:
-            #     print(f"Episode {episode}")
+            if episode % 100 == 0:
+                print(f"Episode {episode}")
             while not done:
                 done = self.env_step()
             self.state = self.env.reset()[0]
