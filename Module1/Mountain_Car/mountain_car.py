@@ -67,15 +67,15 @@ class QAgent:
         
         Return a tuple containing the indices along each dimension
         '''
-        T = []
+        Indices = []
         low = self.observation_space_low
         high = self.observation_space_high
         for i in range(len(state)):
             r = self.discrete_sizes[i]
             r = float(high[i] - low[i])/r
             s = state[i]
-            T.append(int((s - low[i])/r))
-        return tuple(T)
+            Indices.append(int((s - low[i])/r))
+        return tuple(Indices)
         pass
 
     def update(self, state, action, reward, next_state, is_terminal):
@@ -84,17 +84,31 @@ class QAgent:
         First discretize both the state and next_state to get indices in q-table.
         The boolean is_terminal here represents whether the state action pair resulted in termination (NOT TRUNCATION) of environment. In this case, update the value by considering max_a' q(s', a,) = 0 (consult theory for why) and not based on q-table.
         '''
+        state_indices = self.get_state_index(state)
+        next_state_indices = self.get_state_index(next_state)
+        
         if is_terminal:
+            self.q_table[state_indices] = self.q_table[state_indices] + self.alpha*(reward - self.q_table[state_indices])
+            self.state = self.env.reset()[0]
             pass
         else:
+            self.q_table[state_indices] = self.q_table[state_indices] + self.alpha*(reward + self.gamma*(np.argmax(self.q_table[next_state_indices])) - self.q_table[state_indices])
             pass
     
     def get_action(self):    
         '''
         Get the action either greedily, or randomly based on epsilon (You may use self.env.action_space.sample() to get a random action). Return an int representing action, based on self.state. Remember to discretize self.state first
         '''
+        state_indices = self.get_state_index(self.state)
+        
+        if (np.random.rand() < self.epsilon):
+            action = self.env.action_space.sample()
+            return action
+        else:
+            q_values = self.q_table[state_indices]
+            action = np.argmax(q_values)
+            return action
         pass
-    
     
     def env_step(self):
         '''
