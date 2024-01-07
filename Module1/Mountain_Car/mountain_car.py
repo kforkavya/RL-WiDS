@@ -92,7 +92,9 @@ class QAgent:
             self.state = self.env.reset()[0]
             pass
         else:
-            self.q_table[state_indices] = self.q_table[state_indices] + self.alpha*(reward + self.gamma*(np.argmax(self.q_table[next_state_indices])) - self.q_table[state_indices])
+            target = reward + self.gamma*self.q_table[next_state_indices].max()
+            error = target - self.q_table[state_indices][action]
+            self.q_table[state_indices, action] += self.alpha*error
             pass
     
     def get_action(self):    
@@ -129,13 +131,15 @@ class QAgent:
         done = False
         eval_state = eval_env.reset()[0]
         while not done:
-            action = None # Take action based on greedy strategy now
+            action = self.get_greedy_action() # Take action based on greedy strategy now
             next_state, reward, terminated, truncated, info = eval_env.step(action)
             
             eval_env.render() #Renders the environment on a window.
             
             done = terminated or truncated
             eval_state = next_state
+        
+        #eval_env.close()  # Close the environment after evaluation
           
     def train(self, eval_intervals):
         '''Main function to train the agent'''
@@ -151,6 +155,20 @@ class QAgent:
                 #Check performance of agent
                 self.agent_eval()
         
+    def get_greedy_action(self):
+        '''
+        Get the greedy action based on the Q-values for the current state.
+        Return an int representing the action, based on self.state.
+        Remember to discretize self.state first.
+        '''
+        state_indices = self.get_state_index(self.state)
+        
+        # Choose the action with the highest Q-value
+        q_values = self.q_table[state_indices]
+        action = np.argmax(q_values)
+        
+        return action
+
 
 if __name__ == "__main__":
     agent = QAgent("MountainCar-v0")
