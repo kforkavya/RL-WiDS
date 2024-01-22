@@ -1,0 +1,121 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{WiDS 2023 Report: Contractor's Guide To RL}
+\author{Kavya Gupta, Shravan S}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Mountain Car Game}
+\subsection{Introduction}
+Reinforcement learning (RL) is a branch of machine learning where an agent learns to make decisions by interacting with an environment. In this project, the goal is to solve the Mountain Car environment using Q-learning, a popular RL algorithm. The motivation is to understand how Q-learning can be applied to a continuous state space problem and analyze the learning performance of the agent.
+
+\subsection{Background}
+Reinforcement learning involves an agent learning to make decisions by receiving feedback in the form of rewards or penalties.
+Q-learning is a model-free RL algorithm that learns to associate actions with states to maximize cumulative rewards. The 
+Gymnasium library provides a convenient interface for creating RL environments. The Mountain Car environment presents a 
+challenge where a car must reach the flag at the top of a hill, requiring the agent to learn a strategy for efficient movement.
+
+\subsection{Implementation}
+\subsubsection{QAgent Class}
+The \texttt{QAgent} class encapsulates the functionality of the RL agent. It initializes the Gymnasium environment, defines 
+the observation space size, action space size, and hyperparameters such as learning rate (\(\alpha\)) and discount factor 
+(\(\gamma\)). The Q-table is initialized with random values to represent state-action pairs.
+
+\subsubsection{Methods}
+\begin{itemize}
+    \item \texttt{get\_state\_index}: This method discretizes the continuous state space into indices for the Q-table using 
+    the provided formula.
+    \item \texttt{update}: The \texttt{update} method implements the Q-learning update rule. It calculates the new Q-value 
+    based on the reward, the maximum Q-value for the next state, and the current Q-value.
+    \item \texttt{get\_action}: The \texttt{get\_action} method implements an epsilon-greedy strategy. With probability 
+    \(\epsilon\), it selects a random action for exploration; otherwise, it exploits the action with the highest Q-value.
+    \item \texttt{env\_step}: This method takes a step in the environment, updates the Q-table, and moves to the next state.
+\end{itemize}
+
+\subsubsection{Training Loop}
+The training loop iterates over a specified number of episodes. Within each episode, the agent interacts with the environment 
+using the epsilon-greedy strategy. The Q-table is updated after each step based on the reward and the Q-learning update rule. 
+The epsilon value is decayed linearly over episodes.
+
+\subsubsection{Evaluation}
+The \texttt{agent\_eval} method is used to visualize the performance of the trained agent. This allows a qualitative 
+assessment of the learned policy.
+
+\subsubsection{Testing}
+The \texttt{test\_agent} method is used to evaluate the agent's performance over a specified number of episodes.
+
+% \subsection{Plotting}
+% The \texttt{plot\_rewards} method is used to plot the cumulative rewards obtained per step during training.
+
+\subsection{Results}
+% \subsection{Learning Progress}
+% The learning progress is visualized by plotting the total rewards obtained in each episode. The plot provides insights into how well the agent is learning the optimal strategy over time.
+
+\subsubsection{Fine-Tuning}
+Hyperparameter fine-tuning experiments were conducted to optimize parameters such as learning rate (\(\alpha\)), discount 
+factor (\(\gamma\)), and the discretization sizes. The impact of these parameters on learning performance was analyzed.
+
+\subsubsection{Rendering}
+The rendering frequency during training was adjusted to balance visualization and computational efficiency. Rendering allows 
+monitoring the agent's behavior in real-time.
+
+% \section{Conclusion}
+% Summarize the key findings, insights, and challenges encountered during the implementation and training of the Q-learning agent for the Mountain Car environment.
+
+\section{N-Armed Bandits Problem}
+In addition to the Mountain Car environment, we explored the n-armed bandits problem—a classic reinforcement learning scenario where an agent must choose among several actions, each associated with an unknown reward distribution. The goal is to maximize the cumulative reward over time.
+
+\subsection{Agent Classes}
+We implemented several agents to tackle the n-armed bandits problem, each employing a different strategy:
+
+\subsubsection{GreedyAgent}
+The \texttt{GreedyAgent} always chooses the action with the highest estimated value based on historical rewards. It maintains a Q-value (\(Q(a)\)) for each action.
+
+\subsubsection{epsGreedyAgent}
+The \texttt{epsGreedyAgent} balances exploration and exploitation by choosing a random action with probability \(\epsilon\) and otherwise selecting the action with the highest Q-value.
+
+\subsubsection{UCBAAgent}
+The \texttt{UCBAAgent} employs the Upper Confidence Bound (UCB) strategy, which prioritizes actions based on the estimated mean reward (\(\hat{\mu}(a)\)) and an exploration term (\(U(a)\)):
+\[ U(a) = \sqrt{\frac{2 \ln(t)}{N(a)}} \]
+where \(N(a)\) is the number of times action \(a\) has been selected, and \(t\) is the total number of iterations.
+
+\subsubsection{GradientBanditAgent}
+The \texttt{GradientBanditAgent} uses a softmax function to select actions based on their estimated preferences (\(H(a)\)):
+\[ \pi(a) = \frac{e^{H(a)}}{\sum_{i=1}^{k}e^{H(i)}} \]
+It updates action preferences based on rewards received using the update rule:
+\[ H(a) \leftarrow H(a) + \alpha (R - \bar{R}) (1 - \pi(a)) \]
+where \(R\) is the received reward, \(\bar{R}\) is the average reward, and \(\alpha\) is the learning rate.
+
+\subsubsection{ThompsonSamplerAgent}
+The \texttt{ThompsonSamplerAgent} employs Bayesian methods, specifically the Thompson sampling strategy, to update its belief about the reward distribution for each action. It uses Beta-distributed priors to model success and failure counts (\(\alpha(a), \beta(a)\)):
+\[ P(R(a) | \alpha(a), \beta(a)) = \text{Beta}(\alpha(a) + \text{successes}(a), \beta(a) + \text{failures}(a)) \]
+The action is selected based on the sampled values from the posterior distribution.
+
+\subsection{Performance Evaluation}
+To evaluate the performance of the different agents, we conducted experiments over a specified number of iterations. The cumulative rewards obtained by each agent were recorded and analyzed.
+
+\subsection{Performance Graph}
+The performance graph (see Figure \ref{fig:bandit_performance}) illustrates the cumulative rewards obtained by each agent over time.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{output.png}
+    \caption{Cumulative rewards obtained by n-armed bandits agents over iterations.}
+    \label{fig:bandit_performance}
+\end{figure}
+
+The graph provides insights into how well each agent learned to exploit the actions with higher rewards and adapt its strategy over time.
+
+\subsection{Comparison with Mountain Car Results}
+In contrast to the continuous state space of the Mountain Car environment, the n-armed bandits problem focuses on discrete actions and rewards. Comparing the results and strategies employed by agents in both scenarios can offer valuable insights into the adaptability and generalization capabilities of reinforcement learning algorithms.
+
+\end{document}
