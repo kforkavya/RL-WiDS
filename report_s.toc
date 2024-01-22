@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}Introduction}{3}{}%
+\contentsline {section}{\numberline {2}Background}{3}{}%
+\contentsline {section}{\numberline {3}Implementation}{3}{}%
+\contentsline {subsection}{\numberline {3.1}QAgent Class}{3}{}%
+\contentsline {subsection}{\numberline {3.2}Methods}{3}{}%
+\contentsline {subsection}{\numberline {3.3}Training Loop}{4}{}%
+\contentsline {subsection}{\numberline {3.4}Evaluation}{4}{}%
+\contentsline {subsection}{\numberline {3.5}Testing}{4}{}%
+\contentsline {section}{\numberline {4}Results}{4}{}%
+\contentsline {subsection}{\numberline {4.1}Fine-Tuning}{4}{}%
+\contentsline {subsection}{\numberline {4.2}Rendering}{4}{}%

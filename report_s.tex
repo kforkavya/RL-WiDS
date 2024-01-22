@@ -1,0 +1,73 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{Contractor's Guide To RL}
+\author{Kavya Gupta, Shravan S}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+Reinforcement learning (RL) is a branch of machine learning where an agent learns to make decisions by interacting with an environment. In this project, the goal is to solve the Mountain Car environment using Q-learning, a popular RL algorithm. The motivation is to understand how Q-learning can be applied to a continuous state space problem and analyze the learning performance of the agent.
+
+\section{Background}
+Reinforcement learning involves an agent learning to make decisions by receiving feedback in the form of rewards or penalties.
+Q-learning is a model-free RL algorithm that learns to associate actions with states to maximize cumulative rewards. The 
+Gymnasium library provides a convenient interface for creating RL environments. The Mountain Car environment presents a 
+challenge where a car must reach the flag at the top of a hill, requiring the agent to learn a strategy for efficient movement.
+
+\section{Implementation}
+\subsection{QAgent Class}
+The \texttt{QAgent} class encapsulates the functionality of the RL agent. It initializes the Gymnasium environment, defines 
+the observation space size, action space size, and hyperparameters such as learning rate (\(\alpha\)) and discount factor 
+(\(\gamma\)). The Q-table is initialized with random values to represent state-action pairs.
+
+\subsection{Methods}
+\begin{itemize}
+    \item \texttt{get\_state\_index}: This method discretizes the continuous state space into indices for the Q-table using 
+    the provided formula.
+    \item \texttt{update}: The \texttt{update} method implements the Q-learning update rule. It calculates the new Q-value 
+    based on the reward, the maximum Q-value for the next state, and the current Q-value.
+    \item \texttt{get\_action}: The \texttt{get\_action} method implements an epsilon-greedy strategy. With probability 
+    \(\epsilon\), it selects a random action for exploration; otherwise, it exploits the action with the highest Q-value.
+    \item \texttt{env\_step}: This method takes a step in the environment, updates the Q-table, and moves to the next state.
+\end{itemize}
+
+\subsection{Training Loop}
+The training loop iterates over a specified number of episodes. Within each episode, the agent interacts with the environment 
+using the epsilon-greedy strategy. The Q-table is updated after each step based on the reward and the Q-learning update rule. 
+The epsilon value is decayed linearly over episodes.
+
+\subsection{Evaluation}
+The \texttt{agent\_eval} method is used to visualize the performance of the trained agent. This allows a qualitative 
+assessment of the learned policy.
+
+\subsection{Testing}
+The \texttt{test\_agent} method is used to evaluate the agent's performance over a specified number of episodes.
+
+% \subsection{Plotting}
+% The \texttt{plot\_rewards} method is used to plot the cumulative rewards obtained per step during training.
+
+\section{Results}
+% \subsection{Learning Progress}
+% The learning progress is visualized by plotting the total rewards obtained in each episode. The plot provides insights into how well the agent is learning the optimal strategy over time.
+
+\subsection{Fine-Tuning}
+Hyperparameter fine-tuning experiments were conducted to optimize parameters such as learning rate (\(\alpha\)), discount 
+factor (\(\gamma\)), and the discretization sizes. The impact of these parameters on learning performance was analyzed.
+
+\subsection{Rendering}
+The rendering frequency during training was adjusted to balance visualization and computational efficiency. Rendering allows 
+monitoring the agent's behavior in real-time.
+
+% \section{Conclusion}
+% Summarize the key findings, insights, and challenges encountered during the implementation and training of the Q-learning agent for the Mountain Car environment.
+
+\end{document}
